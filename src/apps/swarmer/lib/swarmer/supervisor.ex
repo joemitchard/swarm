@@ -12,6 +12,7 @@ defmodule Swarmer.Supervisor do
     children = [
       supervisor(Swarmer.TileSupervisor, []),
       supervisor(Swarmer.ViewerSupervisor, []),
+      supervisor(Swarmer.Actor.ActorSupervisor, []),
 
       worker(Swarmer.Environment, [])
     ]

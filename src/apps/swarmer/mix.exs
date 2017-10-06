@@ -39,6 +39,9 @@ defmodule Swarmer.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:exactor, "~> 2.2.3"},
+      {:fsm, "~> 0.3.0"}
+    ]
   end
 end
