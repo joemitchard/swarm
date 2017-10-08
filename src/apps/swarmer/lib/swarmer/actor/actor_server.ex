@@ -1,6 +1,7 @@
 defmodule Swarmer.Actor.ActorServer do
   use ExActor.GenServer
 
+  alias Swarmer.Tile
   alias Swarmer.Actor.Zombie
 
   defmodule State do
@@ -10,27 +11,43 @@ defmodule Swarmer.Actor.ActorServer do
 
   @doc """
   Creates a new server, initialising an actor fsm of `type`
-
   """
   defstart start_link(type, x, y, tile) do
     actor = get_actor(type)
 
+    # Initialises a new actor
+    fsm = actor.new() |> actor.init(x, y, tile)
+
     state = %State{
       actor: actor,
-      actor_fsm: actor.new() |> actor.init(x, y, tile)
+      actor_fsm: fsm
     }
+
+    # Possible no need for the data call, could just use params
+    data = actor.data(fsm)
+
+    Tile.register_actor(tile, {self(), actor, data.x, data.y})
 
     initial_state(state)
   end
 
+  @doc """
+  Gets the state of the actor
+  """
   defcall get_state, state: %State{actor: actor, actor_fsm: actor_fsm} do
     reply(actor.state(actor_fsm))
   end
 
+  @doc """
+  Gets the data of the actor
+  """
   defcall get_data, state: %State{actor: actor, actor_fsm: actor_fsm} do
     reply(actor.data(actor_fsm))
   end
 
+  @doc """
+  Gets the current type of the actor
+  """
   defcall get_type, state: %{actor: actor}, do: reply(actor)
   
   @doc """

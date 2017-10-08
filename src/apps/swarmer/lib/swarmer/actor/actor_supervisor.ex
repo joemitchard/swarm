@@ -1,6 +1,6 @@
 defmodule Swarmer.Actor.ActorSupervisor do
   use Supervisor
-
+  # {:ok, pid} = Supervisor.start_child(ActorSupervisor, [:zombie, 5,5, self()])
   def start_link() do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end

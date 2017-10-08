@@ -16,7 +16,15 @@ defmodule Swarmer.Viewer do
     GenServer.start_link(__MODULE__, [])
   end
 
+  def update_zombies(pid, tile, zombies) do
+    GenServer.cast(pid, {:update_zombies, tile, zombies})
+  end
 
   ### Server
   def init(_opts, state), do: {:ok, state}
+
+  def handle_cast({:update_zombies, tile, new_zombies}, %{zombies: zombies} = state) do
+    zombies = Map.put(zombies, tile, new_zombies)
+    {:noreply, %State{state | zombies: zombies}}
+  end
 end

@@ -2,7 +2,7 @@ defmodule Swarmer.Grid do
   @moduledoc """
   Builds a grid by spawning tiles and viewers.
   """
-  alias Swarmer.{TileSupervisor, ViewerSupervisor}
+  alias Swarmer.{TileSupervisor, ViewerSupervisor, Util}
 
   defmodule GridTile do
     defstruct tile_name: nil,
@@ -54,7 +54,7 @@ defmodule Swarmer.Grid do
     row_acc
   end
   defp make_row(r_counter, cols, c_counter, tile_size, row_acc) do
-    name = make_tile_name(r_counter, c_counter)
+    name = Util.get_tile_name(r_counter, c_counter)
     {:ok, viewer} = Supervisor.start_child(ViewerSupervisor, [])
     
     tile_opts = [
@@ -69,13 +69,6 @@ defmodule Swarmer.Grid do
     grid_tile = %GridTile{tile_name: name, viewer: viewer}
 
     make_row(r_counter, cols, c_counter + 1, tile_size, row_acc ++ [grid_tile])
-  end
-
-  # Makes an atom for a tile name
-  defp make_tile_name(row_counter, col_counter) do
-    "tileX#{Integer.to_charlist(row_counter)}Y#{Integer.to_charlist(col_counter)}"
-    |> String.to_charlist()
-    |> List.to_atom()
   end
 
   # Finds neighbouring tiles
